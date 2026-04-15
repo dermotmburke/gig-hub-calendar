@@ -60,17 +60,19 @@ function AddGigModal({ date, onClose, onSaved }: AddGigModalProps) {
     }
   }
 
+  const inputClass = 'w-full bg-white dark:bg-black border-2 border-black dark:border-white px-3 py-2 text-sm font-medium placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[4px]';
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white border-4 border-black brutalist-shadow w-full max-w-md mx-4">
-        <div className="flex items-center justify-between border-b-4 border-black px-6 py-4">
+      <div className="bg-white dark:bg-black border-4 border-black dark:border-white brutalist-shadow w-full max-w-md mx-4">
+        <div className="flex items-center justify-between border-b-4 border-black dark:border-white px-6 py-4">
           <h2 className="text-xl font-black uppercase tracking-tighter">ADD GIG</h2>
           <button
             onClick={onClose}
-            className="font-black text-xl hover:bg-black hover:text-white w-8 h-8 flex items-center justify-center transition-colors"
+            className="font-black text-xl hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black w-8 h-8 flex items-center justify-center transition-colors"
           >
             ✕
           </button>
@@ -88,7 +90,7 @@ function AddGigModal({ date, onClose, onSaved }: AddGigModalProps) {
               placeholder="Artist or band name"
               required
               autoFocus
-              className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium placeholder-gray-400 focus:outline-none focus:border-[4px]"
+              className={inputClass}
             />
           </div>
 
@@ -102,7 +104,7 @@ function AddGigModal({ date, onClose, onSaved }: AddGigModalProps) {
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Venue name and city"
               required
-              className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium placeholder-gray-400 focus:outline-none focus:border-[4px]"
+              className={inputClass}
             />
           </div>
 
@@ -115,7 +117,7 @@ function AddGigModal({ date, onClose, onSaved }: AddGigModalProps) {
               value={eventDatetime}
               onChange={(e) => setEventDatetime(e.target.value)}
               required
-              className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium focus:outline-none focus:border-[4px]"
+              className={inputClass}
             />
           </div>
 
@@ -128,7 +130,7 @@ function AddGigModal({ date, onClose, onSaved }: AddGigModalProps) {
               value={ticketUrl}
               onChange={(e) => setTicketUrl(e.target.value)}
               placeholder="https://..."
-              className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium placeholder-gray-400 focus:outline-none focus:border-[4px]"
+              className={inputClass}
             />
           </div>
 
@@ -141,26 +143,26 @@ function AddGigModal({ date, onClose, onSaved }: AddGigModalProps) {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Anything to remember..."
               rows={2}
-              className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium placeholder-gray-400 focus:outline-none focus:border-[4px] resize-none"
+              className={`${inputClass} resize-none`}
             />
           </div>
 
           {error && (
-            <p className="text-xs font-black uppercase border-2 border-black px-3 py-2">{error}</p>
+            <p className="text-xs font-black uppercase border-2 border-black dark:border-white px-3 py-2">{error}</p>
           )}
 
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-black text-white font-black uppercase text-sm px-5 py-3 disabled:opacity-50 hover:invert transition-all active:translate-x-0.5 active:translate-y-0.5"
+              className="flex-1 bg-black text-white dark:bg-white dark:text-black font-black uppercase text-sm px-5 py-3 disabled:opacity-50 hover:invert transition-all active:translate-x-0.5 active:translate-y-0.5"
             >
               {saving ? 'SAVING…' : 'SAVE GIG'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-3 text-sm font-black uppercase border-2 border-black hover:bg-black hover:text-white transition-colors"
+              className="px-4 py-3 text-sm font-black uppercase border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
             >
               CANCEL
             </button>
@@ -252,13 +254,13 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
         <div className="flex gap-2">
           <button
             onClick={prevMonth}
-            className="border-4 border-black px-4 py-3 font-black hover:bg-black hover:text-white transition-colors active:translate-x-0.5 active:translate-y-0.5"
+            className="border-4 border-black dark:border-white px-4 py-3 font-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors active:translate-x-0.5 active:translate-y-0.5"
           >
             ←
           </button>
           <button
             onClick={nextMonth}
-            className="border-4 border-black px-4 py-3 font-black hover:bg-black hover:text-white transition-colors active:translate-x-0.5 active:translate-y-0.5"
+            className="border-4 border-black dark:border-white px-4 py-3 font-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors active:translate-x-0.5 active:translate-y-0.5"
           >
             →
           </button>
@@ -266,9 +268,9 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 border-t-4 border-l-4 border-black">
+      <div className="grid grid-cols-7 border-t-4 border-l-4 border-black dark:border-white">
         {DAYS.map((d) => (
-          <div key={d} className="border-r-4 border-b-4 border-black p-2 text-xs font-black uppercase text-center">
+          <div key={d} className="border-r-4 border-b-4 border-black dark:border-white p-2 text-xs font-black uppercase text-center">
             {d}
           </div>
         ))}
@@ -278,7 +280,7 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
             return (
               <div
                 key={`empty-${i}`}
-                className="border-r-4 border-b-4 border-black p-2 min-h-[100px] bg-surface-container"
+                className="border-r-4 border-b-4 border-black dark:border-white p-2 min-h-[100px] bg-surface-container dark:bg-zinc-900"
               />
             );
           }
@@ -294,11 +296,13 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
             <button
               key={day}
               onClick={() => handleDayClick(day)}
-              className={`border-r-4 border-b-4 border-black p-2 min-h-[100px] text-left relative group transition-colors ${
-                isToday ? 'bg-black text-white' : 'hover:bg-surface-container'
+              className={`border-r-4 border-b-4 border-black dark:border-white p-2 min-h-[100px] text-left relative group transition-colors ${
+                isToday
+                  ? 'bg-black text-white dark:bg-white dark:text-black'
+                  : 'hover:bg-surface-container dark:hover:bg-zinc-900'
               }`}
             >
-              <span className={`text-sm font-black ${isToday ? 'text-white' : ''}`}>{day}</span>
+              <span className="text-sm font-black">{day}</span>
 
               {/* Gig dots */}
               <div className="mt-2 flex flex-col gap-1">
@@ -306,7 +310,7 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
                   <div
                     key={gig.id}
                     className={`text-[10px] font-black uppercase leading-tight truncate px-1 ${
-                      isToday ? 'bg-white text-black' : 'bg-black text-white'
+                      isToday ? 'bg-white text-black dark:bg-black dark:text-white' : 'bg-black text-white dark:bg-white dark:text-black'
                     }`}
                     title={gig.artist}
                   >
@@ -314,7 +318,7 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
                   </div>
                 ))}
                 {dayGigs.length > 3 && (
-                  <div className={`text-[10px] font-black ${isToday ? 'text-white' : ''}`}>
+                  <div className="text-[10px] font-black">
                     +{dayGigs.length - 3} MORE
                   </div>
                 )}
@@ -322,9 +326,7 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
 
               {/* Add hint on hover */}
               {dayGigs.length === 0 && (
-                <div className={`absolute bottom-2 right-2 text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isToday ? 'text-white' : 'text-black'
-                }`}>
+                <div className="absolute bottom-2 right-2 text-[10px] font-black uppercase opacity-0 group-hover:opacity-100 transition-opacity">
                   + ADD
                 </div>
               )}
@@ -334,7 +336,7 @@ export default function CalendarView({ initialGigs }: { initialGigs: GigJson[] }
       </div>
 
       {/* Legend */}
-      <p className="text-xs font-bold uppercase mt-4 text-gray-500">
+      <p className="text-xs font-bold uppercase mt-4 text-gray-500 dark:text-gray-400">
         CLICK ANY DAY TO ADD A GIG
       </p>
 

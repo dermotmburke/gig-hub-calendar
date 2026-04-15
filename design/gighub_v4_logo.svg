@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1860 400" width="1860" height="400">
+  <rect width="1860" height="400" fill="white"/>
+
+  <!--
+    Grid: 6 glyphs, each exactly 260px wide, 50px gap, 25px margin
+    Stroke: 85px, Cap height: 300px (y=50 to y=350)
+    Offsets: G=25, I=335, G2=645, H=955, U=1265, B=1575
+  -->
+
+  <!-- ============ G (x=25, w=260) ============ -->
+  <rect x="25"  y="50"  width="260" height="85"  fill="black"/>
+  <rect x="25"  y="50"  width="85"  height="300" fill="black"/>
+  <rect x="25"  y="265" width="260" height="85"  fill="black"/>
+  <rect x="200" y="189" width="85"  height="161" fill="black"/>
+  <rect x="130" y="189" width="155" height="85"  fill="black"/>
+
+  <!-- ============ I (x=335, w=260) ============ -->
+  <rect x="335" y="50"  width="260" height="139" fill="black"/>
+  <rect x="335" y="265" width="260" height="85"  fill="black"/>
+  <rect x="422" y="50"  width="85"  height="300" fill="black"/>
+
+  <!-- ============ G2 (x=645, w=260) ============ -->
+  <rect x="645" y="50"  width="260" height="85"  fill="black"/>
+  <rect x="645" y="50"  width="85"  height="300" fill="black"/>
+  <rect x="645" y="265" width="260" height="85"  fill="black"/>
+  <rect x="820" y="189" width="85"  height="161" fill="black"/>
+  <rect x="750" y="189" width="155" height="85"  fill="black"/>
+
+  <!-- ============ H (x=955, w=260) ============ -->
+  <rect x="955"  y="50"  width="85"  height="300" fill="black"/>
+  <rect x="1130" y="50"  width="85"  height="300" fill="black"/>
+  <rect x="955"  y="131" width="260" height="139" fill="black"/>
+
+  <!-- ============ U (x=1265, w=260) ============ -->
+  <rect x="1265" y="50"  width="85"  height="300" fill="black"/>
+  <rect x="1440" y="50"  width="85"  height="300" fill="black"/>
+  <rect x="1265" y="211" width="260" height="139" fill="black"/>
+
+  <!-- ============ B (x=1575, w=260) ============ -->
+  <rect x="1575" y="50"  width="85"  height="300" fill="black"/>
+  <rect x="1575" y="50"  width="260" height="85"  fill="black"/>
+  <rect x="1575" y="158" width="260" height="85"  fill="black"/>
+  <rect x="1575" y="265" width="260" height="85"  fill="black"/>
+  <rect x="1750" y="50"  width="85"  height="193" fill="black"/>
+  <rect x="1750" y="158" width="85"  height="192" fill="black"/>
+  <!-- Notch on right side of mid bar — 10w x 26h -->
+  <rect x="1825" y="184" width="10"  height="26"  fill="white"/>
+
+</svg>

@@ -15,4 +15,10 @@
     background-image: radial-gradient(#000 10%, transparent 11%);
     background-size: 4px 4px;
   }
+  .dark .brutalist-shadow {
+    box-shadow: 4px 4px 0px 0px #ffffff;
+  }
+  .dark .brutalist-shadow-sm {
+    box-shadow: 2px 2px 0px 0px #ffffff;
+  }
 }

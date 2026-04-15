@@ -4,7 +4,7 @@ import GigCard from './GigCard';
 export default function GigList({ gigs }: { gigs: Gig[] }) {
   if (gigs.length === 0) {
     return (
-      <div className="border-4 border-black p-12 text-center brutalist-shadow">
+      <div className="border-4 border-black dark:border-white p-12 text-center brutalist-shadow">
         <p className="text-4xl font-black uppercase tracking-tighter mb-4">NO GIGS SAVED YET</p>
         <p className="text-sm font-bold uppercase">Click a Save link in Slack to add one.</p>
       </div>

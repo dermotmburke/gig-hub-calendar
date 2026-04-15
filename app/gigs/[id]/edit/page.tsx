@@ -23,7 +23,7 @@ export default async function EditGigPage({
       <h1 className="text-4xl font-black uppercase tracking-tighter leading-none mb-2">
         {gig.artist}
       </h1>
-      <p className="text-xs font-bold uppercase mb-8 text-gray-600">{gig.location}</p>
+      <p className="text-xs font-bold uppercase mb-8 text-gray-600 dark:text-gray-400">{gig.location}</p>
       <EditGigForm gig={gig} />
     </div>
   );

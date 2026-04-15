@@ -20,7 +20,7 @@ export default async function GigsPage({
         </h1>
         <a
           href={showPast ? '/gigs' : '/gigs?past=true'}
-          className="text-xs font-black uppercase border-2 border-black px-3 py-1 hover:bg-black hover:text-white transition-colors shrink-0"
+          className="text-xs font-black uppercase border-2 border-black dark:border-white px-3 py-1 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors shrink-0"
         >
           {showPast ? 'HIDE PAST' : 'SHOW PAST'}
         </a>

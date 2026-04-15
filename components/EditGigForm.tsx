@@ -53,6 +53,8 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
     }
   }
 
+  const inputClass = 'w-full bg-white dark:bg-black border-2 border-black dark:border-white px-3 py-2 text-sm font-medium placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-[4px]';
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
@@ -64,7 +66,7 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           value={ticketUrl}
           onChange={(e) => setTicketUrl(e.target.value)}
           placeholder="https://ticketmaster.com/..."
-          className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium placeholder-gray-400 focus:outline-none focus:border-[4px]"
+          className={inputClass}
         />
       </div>
 
@@ -77,9 +79,9 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           type="datetime-local"
           value={ticketSaleDate}
           onChange={(e) => setTicketSaleDate(e.target.value)}
-          className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium focus:outline-none focus:border-[4px]"
+          className={inputClass}
         />
-        <p className="text-xs font-medium mt-1 text-gray-500">
+        <p className="text-xs font-medium mt-1 text-gray-500 dark:text-gray-400">
           You&apos;ll get a Slack DM when this date arrives.
         </p>
       </div>
@@ -95,11 +97,11 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
             max={30}
             value={reminderDaysBefore}
             onChange={(e) => setReminderDaysBefore(parseInt(e.target.value, 10))}
-            className="w-20 bg-white border-2 border-black px-3 py-2 text-sm font-medium focus:outline-none focus:border-[4px]"
+            className="w-20 bg-white dark:bg-black border-2 border-black dark:border-white px-3 py-2 text-sm font-medium focus:outline-none focus:border-[4px]"
           />
           <span className="text-xs font-black uppercase">DAYS BEFORE THE GIG</span>
         </div>
-        <p className="text-xs font-medium mt-1 text-gray-500">
+        <p className="text-xs font-medium mt-1 text-gray-500 dark:text-gray-400">
           You&apos;ll get a Slack DM this many days before.
         </p>
       </div>
@@ -111,26 +113,26 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Anything to remember..."
           rows={3}
-          className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium placeholder-gray-400 focus:outline-none focus:border-[4px] resize-none"
+          className={`${inputClass} resize-none`}
         />
       </div>
 
       {error && (
-        <p className="text-xs font-black uppercase border-2 border-black px-3 py-2">{error}</p>
+        <p className="text-xs font-black uppercase border-2 border-black dark:border-white px-3 py-2">{error}</p>
       )}
 
       <div className="flex gap-3">
         <button
           type="submit"
           disabled={saving}
-          className="flex-1 bg-black text-white font-black uppercase text-sm px-5 py-3 disabled:opacity-50 hover:invert transition-all active:translate-x-0.5 active:translate-y-0.5"
+          className="flex-1 bg-black text-white dark:bg-white dark:text-black font-black uppercase text-sm px-5 py-3 disabled:opacity-50 hover:invert transition-all active:translate-x-0.5 active:translate-y-0.5"
         >
           {saving ? 'SAVING…' : 'SAVE CHANGES'}
         </button>
         <button
           type="button"
           onClick={handleDelete}
-          className="px-4 py-3 text-sm font-black uppercase border-2 border-black hover:bg-black hover:text-white transition-colors"
+          className="px-4 py-3 text-sm font-black uppercase border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
         >
           REMOVE
         </button>
