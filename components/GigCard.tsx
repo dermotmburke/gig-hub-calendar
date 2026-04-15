@@ -90,44 +90,14 @@ export default function GigCard({ gig }: { gig: Gig }) {
       {!isPast && (
         <div className="flex flex-wrap gap-2">
           {gig.ticketSaleDate && (
-            <span
-              className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold border-2 ${
-                gig.ticketSaleAlertSent ? 'bg-black text-white border-black' : 'border-black'
-              }`}
-            >
-              {gig.ticketSaleAlertSent ? (
-                <>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                    <polyline points="1,5 4,8 9,2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square"/>
-                  </svg>
-                  TICKET ALERT SENT
-                </>
-              ) : (
-                <>
-                  <Hourglass />
-                  TICKET SALE ALERT SET
-                </>
-              )}
+            <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold border-2 border-black">
+              <Hourglass />
+              TICKET SALE ON CALENDAR
             </span>
           )}
-          <span
-            className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold border-2 ${
-              gig.preEventAlertSent ? 'bg-black text-white border-black' : 'border-black'
-            }`}
-          >
-            {gig.preEventAlertSent ? (
-              <>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                  <polyline points="1,5 4,8 9,2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square"/>
-                </svg>
-                EVENT REMINDER SENT
-              </>
-            ) : (
-              <>
-                <Hourglass />
-                {`REMINDER ${gig.reminderDaysBefore}D BEFORE`}
-              </>
-            )}
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold border-2 border-black">
+            <Hourglass />
+            {`REMINDER ${gig.reminderDaysBefore}D BEFORE`}
           </span>
         </div>
       )}

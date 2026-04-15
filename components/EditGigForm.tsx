@@ -80,7 +80,7 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           className="w-full bg-white border-2 border-black px-3 py-2 text-sm font-medium focus:outline-none focus:border-[4px]"
         />
         <p className="text-xs font-medium mt-1 text-gray-500">
-          You&apos;ll get a Slack DM when this date arrives.
+          A calendar event will be created at this date and time.
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           <input
             type="number"
             min={1}
-            max={30}
+            max={28}
             value={reminderDaysBefore}
             onChange={(e) => setReminderDaysBefore(parseInt(e.target.value, 10))}
             className="w-20 bg-white border-2 border-black px-3 py-2 text-sm font-medium focus:outline-none focus:border-[4px]"
@@ -100,7 +100,7 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           <span className="text-xs font-black uppercase">DAYS BEFORE THE GIG</span>
         </div>
         <p className="text-xs font-medium mt-1 text-gray-500">
-          You&apos;ll get a Slack DM this many days before.
+          A calendar popup and email reminder will be set this many days before.
         </p>
       </div>
 
