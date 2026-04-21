@@ -10,7 +10,16 @@ export default async function GigsPage({
 }) {
   const params = await searchParams;
   const showPast = params.past === 'true';
-  const gigs = await listGigs(!showPast);
+
+  let gigs: Awaited<ReturnType<typeof listGigs>>;
+  let calendarError: string | null = null;
+  try {
+    gigs = await listGigs(!showPast);
+  } catch (err) {
+    gigs = [];
+    calendarError = err instanceof Error ? err.message : 'Failed to load gigs from Google Calendar.';
+    console.error('[gigs page]', err);
+  }
 
   return (
     <div>
@@ -25,7 +34,11 @@ export default async function GigsPage({
           {showPast ? 'HIDE PAST' : 'SHOW PAST'}
         </a>
       </div>
-      <GigList gigs={gigs} />
+      {calendarError ? (
+        <p className="text-red-600 dark:text-red-400 font-mono text-sm">{calendarError}</p>
+      ) : (
+        <GigList gigs={gigs} />
+      )}
     </div>
   );
 }
