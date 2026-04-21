@@ -16,6 +16,9 @@ auth/token.json
 
 .idea
 
+# TypeScript incremental build info
+tsconfig.tsbuildinfo
+
 # Generated PWA service worker files (produced at build time by @ducanh2912/next-pwa)
 public/sw.js
 public/sw.js.map
