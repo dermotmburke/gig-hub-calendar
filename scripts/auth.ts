@@ -11,12 +11,12 @@
  *   4. Copy Client ID and Client Secret into .env.local as:
  *        GOOGLE_CLIENT_ID=...
  *        GOOGLE_CLIENT_SECRET=...
- *   5. Run this script, authorise in the browser, then copy the
- *      GOOGLE_REFRESH_TOKEN value into .env.local
+ *   5. Run this script — your browser will open automatically and the
+ *      GOOGLE_REFRESH_TOKEN will be printed once you approve access.
  */
 
 import { google } from 'googleapis';
-import * as readline from 'readline';
+import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -30,6 +30,8 @@ if (fs.existsSync(envPath)) {
 }
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
+const PORT = 4000;
+const REDIRECT_URI = `http://localhost:${PORT}/callback`;
 
 async function main() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -43,11 +45,7 @@ async function main() {
     process.exit(1);
   }
 
-  const oauth2Client = new google.auth.OAuth2(
-    clientId,
-    clientSecret,
-    'urn:ietf:wg:oauth:2.0:oob'
-  );
+  const oauth2Client = new google.auth.OAuth2(clientId, clientSecret, REDIRECT_URI);
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -56,34 +54,78 @@ async function main() {
   });
 
   console.log('\n━━━ Google Calendar Auth ━━━\n');
-  console.log('1. Open this URL in your browser:\n');
-  console.log('  ', authUrl);
-  console.log('\n2. Sign in and approve access.');
-  console.log('3. Copy the code shown and paste it below.\n');
+  console.log('Opening your browser to authorise access…');
+  console.log('If it does not open automatically, visit:\n');
+  console.log(' ', authUrl, '\n');
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  // Try to open the browser automatically
+  const { exec } = await import('child_process');
+  const open =
+    process.platform === 'darwin' ? 'open' :
+    process.platform === 'win32' ? 'start' : 'xdg-open';
+  exec(`${open} "${authUrl}"`);
 
-  rl.question('Paste the code here: ', async (code) => {
-    rl.close();
-    try {
-      const { tokens } = await oauth2Client.getToken(code.trim());
+  // Temporary local server to receive the OAuth callback
+  await new Promise<void>((resolve, reject) => {
+    const server = http.createServer(async (req, res) => {
+      const url = new URL(req.url ?? '/', `http://localhost:${PORT}`);
 
-      if (!tokens.refresh_token) {
-        console.error(
-          '\nNo refresh token received. This usually means the app was already authorised.\n' +
-            'Go to https://myaccount.google.com/permissions, revoke access, then run this script again.'
-        );
-        process.exit(1);
+      if (url.pathname !== '/callback') {
+        res.end();
+        return;
       }
 
-      console.log('\n✓ Authorisation successful!\n');
-      console.log('Add this to your .env.local:\n');
-      console.log(`GOOGLE_REFRESH_TOKEN=${tokens.refresh_token}\n`);
-    } catch (err) {
-      console.error('\nFailed to exchange code for token:', err);
-      process.exit(1);
-    }
+      const code = url.searchParams.get('code');
+      const error = url.searchParams.get('error');
+
+      if (error || !code) {
+        res.writeHead(400);
+        res.end(`Auth failed: ${error ?? 'no code received'}`);
+        server.close();
+        reject(new Error(error ?? 'No authorisation code received'));
+        return;
+      }
+
+      try {
+        const { tokens } = await oauth2Client.getToken(code);
+
+        if (!tokens.refresh_token) {
+          res.writeHead(400);
+          res.end('No refresh token received — see terminal for instructions.');
+          server.close();
+          console.error(
+            '\nNo refresh token received. The app may already be authorised.\n' +
+              'Go to https://myaccount.google.com/permissions, revoke access, then run this script again.'
+          );
+          reject(new Error('no_refresh_token'));
+          return;
+        }
+
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end('<html><body><h2>✓ Authorised! You can close this tab.</h2></body></html>');
+        server.close();
+
+        console.log('\n✓ Authorisation successful!\n');
+        console.log('Add this to your .env.local:\n');
+        console.log(`GOOGLE_REFRESH_TOKEN=${tokens.refresh_token}\n`);
+        resolve();
+      } catch (err) {
+        res.writeHead(500);
+        res.end('Token exchange failed — see terminal.');
+        server.close();
+        reject(err);
+      }
+    });
+
+    server.listen(PORT, () => {
+      console.log(`Waiting for Google to redirect to http://localhost:${PORT}/callback …\n`);
+    });
+
+    server.on('error', reject);
   });
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  console.error('\nAuth failed:', err instanceof Error ? err.message : err);
+  process.exit(1);
+});

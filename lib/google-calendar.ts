@@ -20,8 +20,7 @@ function getAuth() {
   if (!_authClient) {
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      'urn:ietf:wg:oauth:2.0:oob'
+      process.env.GOOGLE_CLIENT_SECRET
     );
     oauth2Client.setCredentials({ refresh_token: getRefreshToken() });
     // Persist any rotated refresh token Google issues alongside a new access
