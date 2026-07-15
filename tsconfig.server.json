@@ -12,7 +12,7 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["server.ts", "scripts/**/*.ts", "lib/**/*.ts"],
+  "include": ["scripts/**/*.ts", "lib/**/*.ts"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   }

@@ -14,7 +14,7 @@ auth/token.json
 # OS
 .DS_Store
 
-.ideatsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
 .idea
 
 # Generated PWA service worker files (produced at build time by @ducanh2912/next-pwa)

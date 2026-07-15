@@ -19,5 +19,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "server.ts", "scripts", "tsconfig.server.json", "dist"]
+  "exclude": ["node_modules", "scripts", "tsconfig.server.json", "dist"]
 }
