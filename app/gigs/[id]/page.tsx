@@ -72,7 +72,7 @@ export default async function GigDetailPage({
         )}
 
         <div className="border-t-4 border-black dark:border-white pt-4 space-y-2">
-          <h2 className="font-label text-xs font-black uppercase tracking-widest">ALERTS</h2>
+          <h2 className="font-label text-xs font-black uppercase tracking-widest">REMINDERS</h2>
           <div className="font-label flex flex-col gap-2 text-sm font-medium">
             <span className={gig.ticketSaleDate ? '' : 'opacity-40'}>
               {gig.ticketSaleDate ? (
@@ -93,9 +93,9 @@ export default async function GigDetailPage({
             </span>
             <span>
               REMINDER: {gig.reminderDaysBefore} DAY{gig.reminderDaysBefore === 1 ? '' : 'S'} BEFORE
-              {gig.preEventAlertSent && (
-                <span className="ml-2 text-xs font-black border-2 border-black dark:border-white px-1">✓ SENT</span>
-              )}
+              <span className="ml-2 text-xs font-black border-2 border-black dark:border-white px-1">
+                🔔 IN CALENDAR
+              </span>
             </span>
           </div>
         </div>

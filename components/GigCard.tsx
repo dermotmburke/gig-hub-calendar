@@ -94,26 +94,9 @@ export default function GigCard({ gig }: { gig: Gig }) {
               🎫 SALE IN CALENDAR
             </span>
           )}
-          <span
-            className={`font-label inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold border-2 ${
-              gig.preEventAlertSent
-                ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
-                : 'border-black dark:border-white'
-            }`}
-          >
-            {gig.preEventAlertSent ? (
-              <>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                  <polyline points="1,5 4,8 9,2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square"/>
-                </svg>
-                EVENT REMINDER SENT
-              </>
-            ) : (
-              <>
-                <Hourglass />
-                {`REMINDER ${gig.reminderDaysBefore}D BEFORE`}
-              </>
-            )}
+          <span className="font-label inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold border-2 border-black dark:border-white">
+            <Hourglass />
+            {`REMINDER ${gig.reminderDaysBefore}D BEFORE`}
           </span>
         </div>
       )}

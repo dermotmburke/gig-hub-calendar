@@ -102,7 +102,7 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           <span className="font-label text-xs font-black uppercase">DAYS BEFORE THE GIG</span>
         </div>
         <p className="text-xs font-medium mt-1 text-gray-500 dark:text-gray-400">
-          You&apos;ll get a Slack DM this many days before.
+          A calendar reminder this many days before the gig.
         </p>
       </div>
 

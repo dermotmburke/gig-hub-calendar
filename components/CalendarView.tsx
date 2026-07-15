@@ -12,7 +12,6 @@ interface GigJson {
   notes?: string;
   ticketSaleDate?: string;
   reminderDaysBefore: number;
-  preEventAlertSent: boolean;
 }
 
 interface AddGigModalProps {

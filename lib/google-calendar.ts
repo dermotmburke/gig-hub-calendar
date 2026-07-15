@@ -3,6 +3,15 @@ import { google, calendar_v3 } from 'googleapis';
 const SOURCE_TAG = 'gig-hub-calendar';
 const TICKET_SALE_TAG = 'gig-hub-ticket-sale';
 
+// Google Calendar caps reminder overrides at 4 weeks (40320 minutes).
+const MAX_REMINDER_MINUTES = 40320;
+
+/** Native calendar reminder that pops `reminderDaysBefore` days before the gig. */
+function preEventReminder(reminderDaysBefore: number): calendar_v3.Schema$Event['reminders'] {
+  const minutes = Math.min(Math.max(reminderDaysBefore, 0) * 24 * 60, MAX_REMINDER_MINUTES);
+  return { useDefault: false, overrides: [{ method: 'popup', minutes }] };
+}
+
 function getAuth() {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -29,7 +38,6 @@ export interface Gig {
   notes?: string;
   ticketSaleDate?: Date;
   reminderDaysBefore: number;
-  preEventAlertSent: boolean;
 }
 
 function eventToGig(event: calendar_v3.Schema$Event): Gig {
@@ -43,7 +51,6 @@ function eventToGig(event: calendar_v3.Schema$Event): Gig {
     notes: event.description || undefined,
     ticketSaleDate: props.ticketSaleDate ? new Date(props.ticketSaleDate) : undefined,
     reminderDaysBefore: parseInt(props.reminderDaysBefore ?? '3', 10),
-    preEventAlertSent: props.preEventAlertSent === 'true',
   };
 }
 
@@ -66,6 +73,7 @@ export async function createGig(data: {
       colorId: '5',
       start: { dateTime: data.eventDate.toISOString() },
       end: { dateTime: endDate.toISOString() },
+      reminders: preEventReminder(3),
       extendedProperties: {
         private: {
           source: SOURCE_TAG,
@@ -73,7 +81,6 @@ export async function createGig(data: {
           ticketSaleDate: '',
           ticketSaleEventId: '',
           reminderDaysBefore: '3',
-          preEventAlertSent: 'false',
         },
       },
     },
@@ -174,7 +181,6 @@ export async function updateGig(
     ticketUrl: string | null;
     ticketSaleDate: Date | null;
     reminderDaysBefore: number;
-    preEventAlertSent: boolean;
   }>
 ): Promise<Gig> {
   const calendar = getCalendar();
@@ -188,9 +194,6 @@ export async function updateGig(
   }
   if (updates.reminderDaysBefore !== undefined) {
     newProps.reminderDaysBefore = String(updates.reminderDaysBefore);
-  }
-  if (updates.preEventAlertSent !== undefined) {
-    newProps.preEventAlertSent = String(updates.preEventAlertSent);
   }
 
   // Keep the dedicated ticket-sale calendar reminder in sync with the sale date.
@@ -219,6 +222,9 @@ export async function updateGig(
   if ('notes' in updates) {
     patchBody.description = updates.notes ?? '';
   }
+  if (updates.reminderDaysBefore !== undefined) {
+    patchBody.reminders = preEventReminder(updates.reminderDaysBefore);
+  }
 
   const updated = await calendar.events.patch({
     calendarId: CALENDAR_ID(),
@@ -242,20 +248,4 @@ export async function deleteGig(id: string): Promise<void> {
   }
 
   await calendar.events.delete({ calendarId: CALENDAR_ID(), eventId: id });
-}
-
-export async function getGigsForAlertCheck(): Promise<Gig[]> {
-  const calendar = getCalendar();
-
-  const response = await calendar.events.list({
-    calendarId: CALENDAR_ID(),
-    privateExtendedProperty: [`source=${SOURCE_TAG}`],
-    orderBy: 'startTime',
-    singleEvents: true,
-    maxResults: 250,
-  });
-
-  return (response.data.items ?? [])
-    .map(eventToGig)
-    .filter((gig) => !gig.preEventAlertSent);
 }
