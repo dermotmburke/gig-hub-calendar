@@ -11,7 +11,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build && npx tsc --project tsconfig.server.json
+RUN npm run build
 
 # Runtime
 FROM base AS runner
@@ -23,7 +23,6 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY package*.json ./
 
@@ -31,4 +30,4 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 
-CMD ["node", "dist/server.js"]
+CMD ["npm", "run", "start"]
