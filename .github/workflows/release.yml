@@ -60,6 +60,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.current }}
+          name: v${{ steps.version.outputs.current }}
+          body: |
+            Docker image: `ghcr.io/${{ github.repository }}:${{ steps.version.outputs.current }}`
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install dependencies (for npm version)
         run: npm ci
 
