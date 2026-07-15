@@ -1,6 +1,6 @@
 # gig-hub-calendar
 
-A companion app for [gig-hub](https://github.com/dermotmburke/gig-hub). Click a link in a Slack message to save a gig, then view your saved events and get Slack DM alerts when tickets go on sale or a gig is approaching.
+A companion app for [gig-hub](https://github.com/dermotmburke/gig-hub). Click a link in a Slack message to save a gig, then view your saved events, get a calendar reminder when tickets go on sale, and a Slack DM when a gig is approaching.
 
 **Stack:** Next.js 15 · TypeScript · Google Calendar API · Tailwind CSS
 
@@ -10,8 +10,8 @@ A companion app for [gig-hub](https://github.com/dermotmburke/gig-hub). Click a 
 
 1. `gig-hub` posts events to Slack — each event includes a 💾 Save link
 2. Clicking the link opens `http://localhost:3000/save?artist=...` which saves the event to your Google Calendar (tagged so it's visible in this app)
-3. Open `http://localhost:3000` to see your saved gigs, set ticket sale dates, and configure reminders
-4. Run the app with `npm run start:cron` to activate hourly Slack DM alerts
+3. Open `http://localhost:3000` to see your saved gigs, set ticket sale dates, and configure reminders. Setting a ticket sale date adds a reminder event to your Google Calendar for when tickets go on sale
+4. Run the app with `npm run start:cron` to activate hourly Slack DM alerts for approaching gigs
 
 ---
 

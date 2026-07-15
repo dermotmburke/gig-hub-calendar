@@ -83,11 +83,9 @@ export default async function GigDetailPage({
                     month: 'long',
                     year: 'numeric',
                   })}
-                  {gig.ticketSaleAlertSent && (
-                    <span className="ml-2 text-xs font-black border-2 border-black dark:border-white px-1">
-                      ✓ SENT
-                    </span>
-                  )}
+                  <span className="ml-2 text-xs font-black border-2 border-black dark:border-white px-1">
+                    🎫 IN CALENDAR
+                  </span>
                 </>
               ) : (
                 'NO TICKET SALE DATE SET'

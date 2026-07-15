@@ -82,7 +82,7 @@ export default function EditGigForm({ gig }: { gig: Gig }) {
           className={inputClass}
         />
         <p className="text-xs font-medium mt-1 text-gray-500 dark:text-gray-400">
-          You&apos;ll get a Slack DM when this date arrives.
+          Added to your calendar as a reminder when tickets go on sale.
         </p>
       </div>
 

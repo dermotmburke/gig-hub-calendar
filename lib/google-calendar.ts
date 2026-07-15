@@ -1,6 +1,7 @@
 import { google, calendar_v3 } from 'googleapis';
 
 const SOURCE_TAG = 'gig-hub-calendar';
+const TICKET_SALE_TAG = 'gig-hub-ticket-sale';
 
 function getAuth() {
   const oauth2Client = new google.auth.OAuth2(
@@ -28,7 +29,6 @@ export interface Gig {
   notes?: string;
   ticketSaleDate?: Date;
   reminderDaysBefore: number;
-  ticketSaleAlertSent: boolean;
   preEventAlertSent: boolean;
 }
 
@@ -43,7 +43,6 @@ function eventToGig(event: calendar_v3.Schema$Event): Gig {
     notes: event.description || undefined,
     ticketSaleDate: props.ticketSaleDate ? new Date(props.ticketSaleDate) : undefined,
     reminderDaysBefore: parseInt(props.reminderDaysBefore ?? '3', 10),
-    ticketSaleAlertSent: props.ticketSaleAlertSent === 'true',
     preEventAlertSent: props.preEventAlertSent === 'true',
   };
 }
@@ -72,8 +71,8 @@ export async function createGig(data: {
           source: SOURCE_TAG,
           ticketUrl: data.ticketUrl ?? '',
           ticketSaleDate: '',
+          ticketSaleEventId: '',
           reminderDaysBefore: '3',
-          ticketSaleAlertSent: 'false',
           preEventAlertSent: 'false',
         },
       },
@@ -108,6 +107,66 @@ export async function getGig(id: string): Promise<Gig> {
   return eventToGig(event.data);
 }
 
+async function deleteEventQuietly(
+  calendar: calendar_v3.Calendar,
+  eventId: string
+): Promise<void> {
+  try {
+    await calendar.events.delete({ calendarId: CALENDAR_ID(), eventId });
+  } catch {
+    // Event already gone — nothing to clean up.
+  }
+}
+
+/**
+ * Creates or updates a dedicated calendar event for a gig's ticket sale, so the
+ * ticket-on-sale time shows up in the user's calendar with a native reminder.
+ * Returns the id of the ticket-sale event.
+ */
+async function upsertTicketSaleEvent(
+  calendar: calendar_v3.Calendar,
+  existingEventId: string | undefined,
+  data: { artist: string; location: string; ticketUrl?: string; saleDate: Date; gigId: string }
+): Promise<string> {
+  const endDate = new Date(data.saleDate.getTime() + 30 * 60 * 1000);
+  const requestBody: calendar_v3.Schema$Event = {
+    summary: `🎫 Tickets on sale: ${data.artist}`,
+    location: data.location,
+    description:
+      `Tickets go on sale for ${data.artist}${data.location ? ` at ${data.location}` : ''}.` +
+      (data.ticketUrl ? `\n\n${data.ticketUrl}` : ''),
+    colorId: '6',
+    start: { dateTime: data.saleDate.toISOString() },
+    end: { dateTime: endDate.toISOString() },
+    reminders: {
+      useDefault: false,
+      overrides: [{ method: 'popup', minutes: 0 }],
+    },
+    extendedProperties: {
+      private: { source: TICKET_SALE_TAG, gigId: data.gigId },
+    },
+  };
+
+  if (existingEventId) {
+    try {
+      const updated = await calendar.events.patch({
+        calendarId: CALENDAR_ID(),
+        eventId: existingEventId,
+        requestBody,
+      });
+      return updated.data.id!;
+    } catch {
+      // Old ticket-sale event was deleted out from under us — fall through and recreate.
+    }
+  }
+
+  const created = await calendar.events.insert({
+    calendarId: CALENDAR_ID(),
+    requestBody,
+  });
+  return created.data.id!;
+}
+
 export async function updateGig(
   id: string,
   updates: Partial<{
@@ -115,7 +174,6 @@ export async function updateGig(
     ticketUrl: string | null;
     ticketSaleDate: Date | null;
     reminderDaysBefore: number;
-    ticketSaleAlertSent: boolean;
     preEventAlertSent: boolean;
   }>
 ): Promise<Gig> {
@@ -125,20 +183,34 @@ export async function updateGig(
 
   const newProps: Record<string, string> = { ...existingProps };
 
-  if ('ticketSaleDate' in updates) {
-    newProps.ticketSaleDate = updates.ticketSaleDate ? updates.ticketSaleDate.toISOString() : '';
+  if ('ticketUrl' in updates) {
+    newProps.ticketUrl = updates.ticketUrl ?? '';
   }
   if (updates.reminderDaysBefore !== undefined) {
     newProps.reminderDaysBefore = String(updates.reminderDaysBefore);
   }
-  if (updates.ticketSaleAlertSent !== undefined) {
-    newProps.ticketSaleAlertSent = String(updates.ticketSaleAlertSent);
-  }
   if (updates.preEventAlertSent !== undefined) {
     newProps.preEventAlertSent = String(updates.preEventAlertSent);
   }
-  if ('ticketUrl' in updates) {
-    newProps.ticketUrl = updates.ticketUrl ?? '';
+
+  // Keep the dedicated ticket-sale calendar reminder in sync with the sale date.
+  if ('ticketSaleDate' in updates) {
+    const saleDate = updates.ticketSaleDate ?? null;
+    newProps.ticketSaleDate = saleDate ? saleDate.toISOString() : '';
+    const existingSaleEventId = existingProps.ticketSaleEventId || undefined;
+
+    if (saleDate) {
+      newProps.ticketSaleEventId = await upsertTicketSaleEvent(calendar, existingSaleEventId, {
+        artist: existing.data.summary ?? '',
+        location: existing.data.location ?? '',
+        ticketUrl: newProps.ticketUrl || undefined,
+        saleDate,
+        gigId: id,
+      });
+    } else {
+      if (existingSaleEventId) await deleteEventQuietly(calendar, existingSaleEventId);
+      newProps.ticketSaleEventId = '';
+    }
   }
 
   const patchBody: calendar_v3.Schema$Event = {
@@ -159,6 +231,16 @@ export async function updateGig(
 
 export async function deleteGig(id: string): Promise<void> {
   const calendar = getCalendar();
+
+  // Clean up the linked ticket-sale reminder event, if one exists.
+  try {
+    const existing = await calendar.events.get({ calendarId: CALENDAR_ID(), eventId: id });
+    const saleEventId = existing.data.extendedProperties?.private?.ticketSaleEventId;
+    if (saleEventId) await deleteEventQuietly(calendar, saleEventId);
+  } catch {
+    // Gig already gone — nothing linked to clean up.
+  }
+
   await calendar.events.delete({ calendarId: CALENDAR_ID(), eventId: id });
 }
 
@@ -175,5 +257,5 @@ export async function getGigsForAlertCheck(): Promise<Gig[]> {
 
   return (response.data.items ?? [])
     .map(eventToGig)
-    .filter((gig) => !gig.ticketSaleAlertSent || !gig.preEventAlertSent);
+    .filter((gig) => !gig.preEventAlertSent);
 }
