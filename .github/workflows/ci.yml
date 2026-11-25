@@ -31,3 +31,21 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Catch a broken start command (e.g. CMD pointing at a file the build no
+      # longer produces) before an image is published.
+      - name: Docker image smoke test
+        run: |
+          docker build -t gig-hub-calendar:ci .
+          docker run -d --name app -p 3000:3000 gig-hub-calendar:ci
+          for i in $(seq 1 30); do
+            # Static asset: no Google credentials needed (pages call the Calendar API).
+            if [ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/manifest.json)" = "200" ]; then
+              echo "server is up"; docker logs app; exit 0
+            fi
+            if [ "$(docker inspect -f '{{.State.Running}}' app)" != "true" ]; then
+              echo "container exited"; docker logs app; exit 1
+            fi
+            sleep 2
+          done
+          echo "server did not respond"; docker logs app; exit 1
