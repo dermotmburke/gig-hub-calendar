@@ -11,7 +11,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build && npx tsc --project tsconfig.server.json
+RUN npm run build
 
 # Runtime
 FROM base AS runner
@@ -23,12 +23,14 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY package*.json ./
 
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 
-CMD ["node", "dist/server.js"]
+# Plain Next.js server. (The custom server.ts with the Slack alert cron was
+# removed along with the Slack integration.)
+CMD ["node_modules/.bin/next", "start"]
